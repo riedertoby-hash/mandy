@@ -4,6 +4,7 @@ import type { Exercise } from '../../core/types';
 import { similar } from '../../content/registry';
 import { play } from '../sound';
 import { store, useProgress } from '../store';
+import { ConfirmDialog } from './ConfirmDialog';
 import { ExerciseView, formatAnswer } from './ExerciseView';
 
 export interface SessionSummary {
@@ -38,6 +39,7 @@ export function Session({ exercises, answerMode, onExit, onFinish }: Props) {
   const [answered, setAnswered] = useState(false);
   const [combo, setCombo] = useState(0);
   const [xpPop, setXpPop] = useState<{ v: number; k: number } | null>(null);
+  const [askExit, setAskExit] = useState(false);
   const wrong = useRef<Exercise[]>([]);
   const [wrongList, setWrongList] = useState<Exercise[]>([]);
   const stats = useRef({ correctFirst: 0, xp: 0 });
@@ -99,13 +101,21 @@ export function Session({ exercises, answerMode, onExit, onFinish }: Props) {
 
   return (
     <div className="session">
+      <ConfirmDialog
+        open={askExit}
+        title="Block abbrechen?"
+        text="Gesammelte XP bleiben erhalten, der Block zählt aber noch nicht als geschafft."
+        confirmLabel="Abbrechen"
+        cancelLabel="Weiterlernen"
+        danger
+        onConfirm={onExit}
+        onCancel={() => setAskExit(false)}
+      />
       <div className="session-top">
         <button
           className="icon-btn"
           aria-label="Abbrechen"
-          onClick={() => {
-            if (window.confirm('Block wirklich abbrechen? Gesammelte XP bleiben erhalten.')) onExit();
-          }}
+          onClick={() => setAskExit(true)}
         >
           ✕
         </button>
