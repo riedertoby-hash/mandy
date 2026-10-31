@@ -20,6 +20,12 @@
   --slot-dark: #b9b4cc;
   --shadow: 0 6px 20px rgba(60, 40, 140, 0.08);
   --radius: 20px;
+  --warn-bg: #fff4d6;
+  --warn-fg: #7a4f00;
+  --ok-fg: #228434;
+  --bad-fg: #b8282d;
+  --glow: #fff4cc;
+  --shelf: #c08a4a;
   color-scheme: light;
 }
 
@@ -40,8 +46,37 @@
     --slot: #3a3550;
     --slot-dark: #5d5878;
     --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    --warn-bg: #3d3015;
+    --warn-fg: #ffe09a;
+    --ok-fg: #8ce99a;
+    --bad-fg: #ffa8a8;
+    --glow: #4a3d14;
     color-scheme: dark;
   }
+}
+
+:root[data-theme='dark'] {
+  --primary: #8b72ff;
+  --primary-dark: #6c4cf1;
+  --primary-soft: #2c2650;
+  --success-soft: #173a22;
+  --danger-soft: #45191c;
+  --bg: #14121f;
+  --surface: #1f1c2e;
+  --surface-2: #29253b;
+  --text: #f1effa;
+  --muted: #a7a2c3;
+  --border: #353049;
+  --track: #353049;
+  --slot: #3a3550;
+  --slot-dark: #5d5878;
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  --warn-bg: #3d3015;
+  --warn-fg: #ffe09a;
+  --ok-fg: #8ce99a;
+  --bad-fg: #ffa8a8;
+  --glow: #4a3d14;
+  color-scheme: dark;
 }
 
 * {
@@ -108,7 +143,9 @@ small {
 .page {
   max-width: 720px;
   margin: 0 auto;
-  padding: 0 16px calc(40px + env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 calc(40px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ---------- Buttons ---------- */
@@ -940,7 +977,7 @@ a.subject-tile:hover {
 }
 .vtable th,
 .vtable td {
-  padding: 8px 14px;
+  padding: 8px 10px;
   text-align: center;
   border-bottom: 2px solid var(--border);
 }
@@ -1070,19 +1107,13 @@ a.subject-tile:hover {
   }
 }
 .repeat-banner {
-  background: #fff4d6;
-  color: #8a5a00;
+  background: var(--warn-bg);
+  color: var(--warn-fg);
   border-radius: 14px;
   padding: 8px 12px;
   font-weight: 800;
   font-size: 0.9rem;
   text-align: center;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .repeat-banner {
-    background: #3d3015;
-    color: #ffd98a;
-  }
 }
 .exercise {
   flex: 1;
@@ -1234,17 +1265,11 @@ a.subject-tile:hover {
   margin-top: 12px;
 }
 .hint {
-  background: #fff8e1;
-  color: #6b4e00;
+  background: var(--warn-bg);
+  color: var(--warn-fg);
   padding: 10px 12px;
   border-radius: 12px;
   font-weight: 700;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .hint {
-    background: #3d3015;
-    color: #ffe09a;
-  }
 }
 .feedback {
   position: sticky;
@@ -1279,18 +1304,10 @@ a.subject-tile:hover {
   font-size: 1.05rem;
 }
 .feedback.correct .feedback-head {
-  color: var(--success-dark);
+  color: var(--ok-fg);
 }
 .feedback.wrong .feedback-head {
-  color: var(--danger-dark);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .feedback.correct .feedback-head {
-    color: #8ce99a;
-  }
-  :root:not([data-theme='light']) .feedback.wrong .feedback-head {
-    color: #ffa8a8;
-  }
+  color: var(--bad-fg);
 }
 .right-answer {
   white-space: nowrap;
@@ -1334,12 +1351,7 @@ a.subject-tile:hover {
   font-weight: 800;
 }
 .c-answer {
-  color: var(--success-dark);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .c-answer {
-    color: #8ce99a;
-  }
+  color: var(--ok-fg);
 }
 details summary {
   cursor: pointer;
@@ -1412,12 +1424,7 @@ details summary {
   margin: 16px 0;
   padding: 16px;
   border-radius: 18px;
-  background: radial-gradient(circle at 50% 30%, #fff4cc, transparent 70%);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .medal-reveal {
-    background: radial-gradient(circle at 50% 30%, #4a3d14, transparent 70%);
-  }
+  background: radial-gradient(circle at 50% 30%, var(--glow), transparent 70%);
 }
 .medal-reveal svg {
   animation: medal 0.9s cubic-bezier(0.2, 1.6, 0.4, 1) backwards 0.3s;
@@ -1579,7 +1586,7 @@ details summary {
   gap: 8px;
   margin-top: 8px;
   padding-bottom: 10px;
-  border-bottom: 8px solid #c08a4a;
+  border-bottom: 8px solid var(--shelf);
   border-radius: 0 0 6px 6px;
 }
 .trophy-slot {
@@ -1737,5 +1744,40 @@ details summary {
   }
   .confetti {
     display: none;
+  }
+}
+
+/* ---------- Dialog ---------- */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(20, 16, 40, 0.45);
+  animation: fade 0.15s ease;
+}
+.dialog {
+  width: min(420px, 100%);
+  margin: 0;
+  animation: zoom 0.2s ease;
+}
+.dialog-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.notice {
+  background: var(--primary-soft);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-weight: 700;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
   }
 }

@@ -1,7 +1,8 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { addDays, dayKey, levelInfo, MEDAL_LABEL, subjectProgress } from '../../core/progress';
 import { SUBJECTS } from '../../content/subjects';
 import { MedalIcon, TrophyIcon } from '../components/Badges';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { TopBar } from '../components/TopBar';
 import { href } from '../router';
 import { liveStreak, store, useProgress } from '../store';
@@ -14,6 +15,8 @@ export function ProfileScreen() {
   const s = useProgress();
   const lvl = levelInfo(s.xp);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [askReset, setAskReset] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const today = dayKey();
   const days = Array.from({ length: 14 }, (_, i) => addDays(today, i - 13));
   const maxXp = Math.max(s.settings.dailyGoal, ...days.map((d) => s.activity[d]?.xp ?? 0));
@@ -35,9 +38,9 @@ export function ProfileScreen() {
   const importData = async (file: File) => {
     try {
       store.importJson(await file.text());
-      alert('Fortschritt wurde geladen.');
+      setNotice('Fortschritt wurde geladen.');
     } catch {
-      alert('Die Datei konnte nicht gelesen werden.');
+      setNotice('Die Datei konnte nicht gelesen werden. Ist es eine Sicherung aus dieser App?');
     }
   };
 
@@ -192,23 +195,45 @@ export function ProfileScreen() {
           </select>
         </label>
         <div className="setting-actions">
-          <button className="btn ghost" onClick={exportData}>
-            ⬇️ Fortschritt sichern
-          </button>
+          {/* The single-file build runs in hosts that block downloads, so export is offered only in the web app. */}
+          {!import.meta.env.VITE_SINGLE && (
+            <button className="btn ghost" onClick={exportData}>
+              ⬇️ Fortschritt sichern
+            </button>
+          )}
           <button className="btn ghost" onClick={() => fileRef.current?.click()}>
             ⬆️ Sicherung laden
           </button>
           <input ref={fileRef} type="file" accept="application/json" hidden onChange={(e) => e.target.files?.[0] && importData(e.target.files[0])} />
           <button
             className="btn ghost danger-text"
-            onClick={() => {
-              if (window.confirm('Wirklich ALLES zurücksetzen? Medaillen, XP und Fortschritt gehen verloren.')) store.reset();
-            }}
+            onClick={() => setAskReset(true)}
           >
             Zurücksetzen
           </button>
         </div>
-        <p className="small muted">Der Fortschritt wird nur auf diesem Gerät gespeichert. Mit «Fortschritt sichern» kannst du ihn auf ein anderes Gerät mitnehmen.</p>
+        {notice && (
+          <p className="small notice" role="status">
+            {notice}
+          </p>
+        )}
+        <ConfirmDialog
+          open={askReset}
+          title="Alles zurücksetzen?"
+          text="Medaillen, XP und der ganze Fortschritt gehen verloren. Das lässt sich nicht rückgängig machen."
+          confirmLabel="Zurücksetzen"
+          danger
+          onConfirm={() => {
+            store.reset();
+            setAskReset(false);
+            setNotice('Fortschritt wurde zurückgesetzt.');
+          }}
+          onCancel={() => setAskReset(false)}
+        />
+        <p className="small muted">
+          Der Fortschritt wird nur auf diesem Gerät gespeichert.
+          {!import.meta.env.VITE_SINGLE && ' Mit «Fortschritt sichern» kannst du ihn auf ein anderes Gerät mitnehmen.'}
+        </p>
       </section>
     </div>
   );
