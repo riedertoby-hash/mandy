@@ -1,5 +1,6 @@
 import type { Subject, Topic } from '../../core/types';
 import { percentTopic } from './percent';
+import { equationTopic, proportionalTopic, pythagorasTopic } from './sekTopics';
 
 const planned = (id: string, title: string, cycle: 1 | 2 | 3, grade: string, icon: string, description: string, chapters: string[]): Topic => ({
   id,
@@ -29,11 +30,11 @@ export const mathSubject: Subject = {
     planned('geometrie1', 'Formen & Flächen', 2, '3.–6. Klasse', '📐', 'Vierecke, Dreiecke, Umfang und Fläche.', ['Formen erkennen', 'Umfang', 'Flächeninhalt']),
     planned('negativ', 'Negative Zahlen', 3, 'Sek 1', '🌡️', 'Rechnen mit ganzen und rationalen Zahlen.', ['Zahlengerade', 'Addieren & Subtrahieren', 'Multiplizieren & Dividieren']),
     planned('terme', 'Terme & Variablen', 3, 'Sek 1', '🔤', 'Mit Buchstaben rechnen, vereinfachen, ausmultiplizieren.', ['Terme aufstellen', 'Vereinfachen', 'Klammern']),
-    planned('gleichungen', 'Gleichungen', 3, 'Sek 1–2', '⚖️', 'Gleichungen umformen und lösen.', ['Einfache Gleichungen', 'Umformen', 'Textaufgaben']),
-    planned('proportional', 'Proportionalität', 3, 'Sek 1', '🔗', 'Dreisatz, proportional und umgekehrt proportional.', ['Dreisatz', 'Proportional', 'Umgekehrt proportional']),
+    proportionalTopic,
+    equationTopic,
     percentTopic,
     planned('potenzen', 'Potenzen & Wurzeln', 3, 'Sek 2', '🌱', 'Hochzahlen, Quadratwurzeln, wissenschaftliche Schreibweise.', ['Potenzen', 'Wurzeln', 'Grosse & kleine Zahlen']),
-    planned('pythagoras', 'Satz des Pythagoras', 3, 'Sek 2', '📐', 'a² + b² = c² und Anwendungen.', ['Der Satz', 'Anwendungen']),
+    pythagorasTopic,
     planned('koerper', 'Flächen & Körper', 3, 'Sek 2–3', '🧊', 'Kreis, Prisma, Zylinder, Pyramide, Kegel.', ['Kreis', 'Prisma & Zylinder', 'Pyramide & Kegel']),
     planned('funktionen', 'Lineare Funktionen', 3, 'Sek 2–3', '📉', 'Graphen, Steigung, Funktionsgleichung.', ['Koordinaten', 'Steigung', 'Gleichung der Geraden']),
     planned('gleichungssysteme', 'Gleichungssysteme', 3, 'Sek 3', '🧷', 'Zwei Gleichungen, zwei Unbekannte.', ['Gleichsetzen', 'Einsetzen', 'Textaufgaben']),

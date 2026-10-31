@@ -928,6 +928,68 @@ a.subject-tile:hover {
   margin-top: 4px;
 }
 
+.vtable-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.vtable {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.vtable th,
+.vtable td {
+  padding: 8px 14px;
+  text-align: center;
+  border-bottom: 2px solid var(--border);
+}
+.vtable tr:last-child th,
+.vtable tr:last-child td {
+  border-bottom: 0;
+}
+.vtable th {
+  text-align: left;
+  color: var(--muted);
+  border-right: 2px solid var(--border);
+  white-space: nowrap;
+}
+.vtable td.unknown {
+  color: var(--primary);
+  background: var(--primary-soft);
+  border-radius: 8px;
+}
+.triangle {
+  width: 100%;
+  max-width: 300px;
+}
+.tri-fill {
+  fill: var(--primary-soft);
+}
+.tri-side {
+  stroke: var(--muted);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.tri-side.hl {
+  stroke: var(--primary);
+  stroke-width: 5;
+}
+.tri-angle {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2;
+}
+.tri-label {
+  font-family: inherit;
+  font-weight: 900;
+  font-size: 16px;
+  fill: var(--text);
+}
+.tri-label.hl {
+  fill: var(--primary);
+}
+
 /* ---------- Lesson ---------- */
 .lesson-page {
   min-height: 100vh;

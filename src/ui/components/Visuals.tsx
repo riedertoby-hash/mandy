@@ -77,7 +77,57 @@ export function PercentBar({ percent, left, right, marks }: { percent: number; l
   );
 }
 
+export function ValueTable({ rows }: { rows: string[][] }) {
+  return (
+    <div className="vtable-wrap">
+      <table className="vtable">
+        <tbody>
+          {rows.map((r, i) => (
+            <tr key={i}>
+              {r.map((c, j) =>
+                j === 0 ? (
+                  <th key={j} scope="row">
+                    {c}
+                  </th>
+                ) : (
+                  <td key={j} className={c === '?' ? 'unknown' : ''}>
+                    {c}
+                  </td>
+                ),
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function RightTriangle({ a, b, c, highlight }: { a: string; b: string; c: string; highlight?: 'a' | 'b' | 'c' }) {
+  const cls = (k: 'a' | 'b' | 'c') => `tri-side ${highlight === k ? 'hl' : ''}`;
+  return (
+    <svg className="triangle" viewBox="0 0 290 170" role="img" aria-label={`Rechtwinkliges Dreieck mit Seiten ${a}, ${b} und ${c}`}>
+      <polygon points="95,20 95,140 270,140" className="tri-fill" />
+      <line x1="95" y1="20" x2="95" y2="140" className={cls('a')} />
+      <line x1="95" y1="140" x2="270" y2="140" className={cls('b')} />
+      <line x1="95" y1="20" x2="270" y2="140" className={cls('c')} />
+      <path d="M95 122 h18 v18" className="tri-angle" />
+      <text x="86" y="84" textAnchor="end" className={`tri-label ${highlight === 'a' ? 'hl' : ''}`}>{a}</text>
+      <text x="182" y="162" textAnchor="middle" className={`tri-label ${highlight === 'b' ? 'hl' : ''}`}>{b}</text>
+      <text x="190" y="70" textAnchor="start" className={`tri-label ${highlight === 'c' ? 'hl' : ''}`}>{c}</text>
+    </svg>
+  );
+}
+
 export function VisualView({ visual }: { visual: Visual }) {
-  if (visual.kind === 'grid') return <Grid total={visual.total} filled={visual.filled} />;
-  return <PercentBar percent={visual.percent} left={visual.left} right={visual.right} marks={visual.marks} />;
+  switch (visual.kind) {
+    case 'grid':
+      return <Grid total={visual.total} filled={visual.filled} />;
+    case 'bar':
+      return <PercentBar percent={visual.percent} left={visual.left} right={visual.right} marks={visual.marks} />;
+    case 'table':
+      return <ValueTable rows={visual.rows} />;
+    case 'triangle':
+      return <RightTriangle a={visual.a} b={visual.b} c={visual.c} highlight={visual.highlight} />;
+  }
 }

@@ -6,7 +6,11 @@ export type Difficulty = 1 | 2 | 3;
 /** Optional picture shown with a task or a theory card. */
 export type Visual =
   | { kind: 'grid'; total: number; filled: number }
-  | { kind: 'bar'; percent: number; left?: string; right?: string; marks?: number[] };
+  | { kind: 'bar'; percent: number; left?: string; right?: string; marks?: number[] }
+  /** Value table, first column is the row label. */
+  | { kind: 'table'; rows: string[][] }
+  /** Right triangle: legs a (vertical) and b (horizontal), hypotenuse c. Labels are shown as given. */
+  | { kind: 'triangle'; a: string; b: string; c: string; highlight?: 'a' | 'b' | 'c' };
 
 interface ExerciseBase {
   /** Unique id of this concrete task instance. */

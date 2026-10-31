@@ -3,45 +3,11 @@
 // so repetitions are "similar tasks", not memorised answers.
 
 import { chf, num, pct, round } from '../../core/format';
-import { uid } from '../../core/random';
-import type {
-  ChoiceExercise,
-  Difficulty,
-  Exercise,
-  Generator,
-  GridExercise,
-  NumberExercise,
-  Rng,
-} from '../../core/types';
+import type { Difficulty, Exercise, Generator, Rng } from '../../core/types';
+import { choiceEx, fixedChoiceEx, gcd, gridEx, numberEx, r4 } from '../helpers';
 
-type Base = { gen: string; chapterId: string; difficulty: Difficulty };
-type NumberFields = Omit<NumberExercise, 'id' | 'type' | keyof Base>;
-type ChoiceFields = Omit<ChoiceExercise, 'id' | 'type' | keyof Base | 'answerIndex' | 'options'>;
-
-const numberEx = (b: Base, f: NumberFields): NumberExercise => ({ ...b, ...f, type: 'number', id: uid(b.gen) });
-const gridEx = (b: Base, f: Omit<GridExercise, 'id' | 'type' | keyof Base>): GridExercise => ({
-  ...b,
-  ...f,
-  type: 'grid',
-  id: uid(b.gen),
-});
-
-/** Builds a multiple choice task; the first option is the correct one, order gets shuffled. */
-function choiceEx(rng: Rng, b: Base, f: ChoiceFields, correct: string, wrong: string[], keepOrder = false): ChoiceExercise {
-  const uniqueWrong = [...new Set(wrong.filter((w) => w !== correct))];
-  const all = keepOrder ? [correct, ...uniqueWrong] : rng.shuffle([correct, ...uniqueWrong]);
-  return { ...b, ...f, type: 'choice', id: uid(b.gen), options: all, answerIndex: all.indexOf(correct) };
-}
-
-/** Same as choiceEx, but options stay in the given order (correct one passed by index). */
-function fixedChoiceEx(b: Base, f: ChoiceFields, options: string[], answerIndex: number): ChoiceExercise {
-  return { ...b, ...f, type: 'choice', id: uid(b.gen), options, answerIndex };
-}
-
-const gcd = (a: number, b: number): number => (b === 0 ? Math.abs(a) : gcd(b, a % b));
 /** Smallest step for G so that G · p / 100 is a whole number (p integer). */
 const stepFor = (p: number) => 100 / gcd(p, 100);
-const r4 = (n: number) => num(n, 4);
 
 // ---------------------------------------------------------------------------
 // Number triples (G = Grundwert, p = Prozentsatz, P = Prozentwert)
