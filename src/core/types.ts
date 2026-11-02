@@ -26,6 +26,10 @@ interface ExerciseBase {
   hint?: string;
   /** Step-by-step solution shown after answering. */
   solution: string[];
+  /** English text read aloud after answering (may contain the solution). */
+  speak?: string;
+  /** English text that may be read aloud before answering (must not reveal the solution). */
+  speakPrompt?: string;
 }
 
 export interface NumberExercise extends ExerciseBase {
@@ -51,9 +55,33 @@ export interface GridExercise extends ExerciseBase {
   answer: number;
 }
 
-export type Exercise = NumberExercise | ChoiceExercise | GridExercise;
+/** Typed word or sentence (languages). Comparison ignores case, extra spaces, end punctuation and contractions. */
+export interface TextExercise extends ExerciseBase {
+  type: 'text';
+  /** All accepted answers; the first one is shown as the solution. */
+  answers: string[];
+  /** Text before / after the input, e.g. "She" … "football." */
+  before?: string;
+  after?: string;
+}
 
-export type UserAnswer = { kind: 'number'; raw: string } | { kind: 'choice'; index: number } | { kind: 'grid'; filled: number };
+/** Build a sentence by tapping word tiles in the right order. */
+export interface OrderExercise extends ExerciseBase {
+  type: 'order';
+  /** Tiles in shuffled order. */
+  tiles: string[];
+  /** Correct sentence(s) as tile sequences joined by single spaces. */
+  answers: string[];
+}
+
+export type Exercise = NumberExercise | ChoiceExercise | GridExercise | TextExercise | OrderExercise;
+
+export type UserAnswer =
+  | { kind: 'number'; raw: string }
+  | { kind: 'choice'; index: number }
+  | { kind: 'grid'; filled: number }
+  | { kind: 'text'; raw: string }
+  | { kind: 'order'; tiles: string[] };
 
 export interface Rng {
   next(): number;
