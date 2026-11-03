@@ -1,4 +1,5 @@
 import type { Subject } from '../core/types';
+import { deutschSubject } from './deutsch';
 import { englishSubject } from './english';
 import { mathSubject } from './math';
 
@@ -8,7 +9,7 @@ const comingSoon = (id: string, name: string, icon: string, color: string): Subj
 
 export const SUBJECTS: Subject[] = [
   mathSubject,
-  comingSoon('deutsch', 'Deutsch', '📖', '#e8590c'),
+  deutschSubject,
   englishSubject,
   comingSoon('franzoesisch', 'Französisch', '🥐', '#ae3ec9'),
   comingSoon('geografie', 'Geografie', '🗺️', '#2f9e44'),
