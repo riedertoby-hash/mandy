@@ -1,16 +1,24 @@
 import { describe, expect, it } from 'vitest';
 import { checkAnswer } from '../src/core/check';
 import { createRng } from '../src/core/random';
-import type { Difficulty, Exercise } from '../src/core/types';
+import type { Difficulty, Exercise, UserAnswer } from '../src/core/types';
 import { buildBlock, GENERATORS, similar } from '../src/content/registry';
 import { SUBJECTS } from '../src/content/subjects';
 
-const correctAnswer = (ex: Exercise) =>
-  ex.type === 'number'
-    ? ({ kind: 'number', raw: String(ex.answer) } as const)
-    : ex.type === 'choice'
-      ? ({ kind: 'choice', index: ex.answerIndex } as const)
-      : ({ kind: 'grid', filled: ex.answer } as const);
+const correctAnswer = (ex: Exercise): UserAnswer => {
+  switch (ex.type) {
+    case 'number':
+      return { kind: 'number', raw: String(ex.answer) };
+    case 'choice':
+      return { kind: 'choice', index: ex.answerIndex };
+    case 'grid':
+      return { kind: 'grid', filled: ex.answer };
+    case 'text':
+      return { kind: 'text', raw: ex.answers[0] };
+    case 'order':
+      return { kind: 'order', tiles: ex.answers[0].split(' ') };
+  }
+};
 
 describe('generators', () => {
   for (const [id, gen] of Object.entries(GENERATORS)) {
@@ -31,6 +39,15 @@ describe('generators', () => {
             expect(new Set(ex.options).size, `${id}: duplicate options in "${ex.prompt}" ${ex.options}`).toBe(ex.options.length);
             expect(ex.options.length).toBeGreaterThanOrEqual(2);
             expect(ex.answerIndex).toBeGreaterThanOrEqual(0);
+          }
+          if (ex.type === 'text') {
+            expect(ex.answers.length).toBeGreaterThan(0);
+            expect(checkAnswer(ex, { kind: 'text', raw: 'zzz' }).correct).toBe(false);
+          }
+          if (ex.type === 'order') {
+            const sorted = [...ex.tiles].sort().join(' ');
+            for (const a of ex.answers) expect([...a.split(' ')].sort().join(' '), `${id}: tiles ≠ answer`).toBe(sorted);
+            expect(ex.tiles.length).toBeGreaterThan(2);
           }
           if (ex.type === 'grid') {
             expect(ex.answer).toBeGreaterThan(0);

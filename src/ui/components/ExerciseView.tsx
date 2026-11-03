@@ -2,11 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { checkAnswer } from '../../core/check';
 import { chf, num } from '../../core/format';
 import type { Exercise, UserAnswer } from '../../core/types';
+import { canSpeak, speak } from '../speech';
 import { Grid, VisualView } from './Visuals';
 
 export function formatAnswer(ex: Exercise): string {
   if (ex.type === 'choice') return ex.options[ex.answerIndex];
   if (ex.type === 'grid') return `${ex.answer} Kästchen`;
+  if (ex.type === 'text') return [ex.before, ex.answers[0], ex.after].filter(Boolean).join(' ');
+  if (ex.type === 'order') return ex.answers[0];
   if (ex.prefix === 'CHF') return chf(ex.answer);
   const value = num(ex.answer, 4);
   return `${ex.prefix ? ex.prefix + ' ' : ''}${value}${ex.unit ? ' ' + ex.unit : ''}`;
@@ -25,6 +28,7 @@ export function ExerciseView({ exercise: ex, onAnswered, onNext, label }: Props)
   const [raw, setRaw] = useState('');
   const [choice, setChoice] = useState<number | null>(null);
   const [filled, setFilled] = useState(0);
+  const [built, setBuilt] = useState<number[]>([]);
   const [status, setStatus] = useState<'answering' | 'correct' | 'wrong'>('answering');
   const [hint, setHint] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
@@ -34,7 +38,7 @@ export function ExerciseView({ exercise: ex, onAnswered, onNext, label }: Props)
   const nextRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (ex.type === 'number') inputRef.current?.focus({ preventScroll: true });
+    if (ex.type === 'number' || ex.type === 'text') inputRef.current?.focus({ preventScroll: true });
   }, [ex]);
   useEffect(() => {
     if (status !== 'answering') nextRef.current?.focus({ preventScroll: true });
@@ -43,6 +47,8 @@ export function ExerciseView({ exercise: ex, onAnswered, onNext, label }: Props)
   const answer = (): UserAnswer | null => {
     if (ex.type === 'number') return raw.trim() ? { kind: 'number', raw } : null;
     if (ex.type === 'choice') return choice === null ? null : { kind: 'choice', index: choice };
+    if (ex.type === 'text') return raw.trim() ? { kind: 'text', raw } : null;
+    if (ex.type === 'order') return built.length ? { kind: 'order', tiles: built.map((i) => ex.tiles[i]) } : null;
     return { kind: 'grid', filled };
   };
 
@@ -62,19 +68,35 @@ export function ExerciseView({ exercise: ex, onAnswered, onNext, label }: Props)
   };
 
   const done = status !== 'answering';
-  const canSubmit = ex.type === 'number' ? raw.trim() !== '' : ex.type === 'choice' ? choice !== null : true;
+  const canSubmit =
+    ex.type === 'number' || ex.type === 'text'
+      ? raw.trim() !== ''
+      : ex.type === 'choice'
+        ? choice !== null
+        : ex.type === 'order'
+          ? built.length === ex.tiles.length
+          : true;
+  const devAnswer =
+    ex.type === 'choice' ? ex.answerIndex : ex.type === 'text' || ex.type === 'order' ? ex.answers[0] : ex.answer;
 
   return (
     <div
       className={`exercise ${status}`}
       // Dev only: lets the automated UI test answer correctly. Not present in production builds.
-      data-answer={import.meta.env.DEV ? (ex.type === 'choice' ? ex.answerIndex : ex.answer) : undefined}
+      data-answer={import.meta.env.DEV ? devAnswer : undefined}
       data-type={ex.type}
     >
       <div className="exercise-card">
         {label && <div className="exercise-label">{label}</div>}
         {ex.context && <p className="exercise-context">{ex.context}</p>}
-        <h2 className="exercise-prompt">{ex.prompt}</h2>
+        <h2 className="exercise-prompt">
+          {ex.prompt}
+          {ex.speakPrompt && canSpeak() && (
+            <button type="button" className="speak-btn" onClick={() => speak(ex.speakPrompt!)} aria-label="Vorlesen">
+              🔊
+            </button>
+          )}
+        </h2>
         {ex.visual && (
           <div className="exercise-visual">
             <VisualView visual={ex.visual} />
@@ -104,7 +126,54 @@ export function ExerciseView({ exercise: ex, onAnswered, onNext, label }: Props)
             {ex.unit && <span className="affix">{ex.unit}</span>}
           </form>
         )}
-        {invalid && <p className="invalid-msg">Bitte gib eine Zahl ein (z. B. 12.5).</p>}
+        {ex.type === 'text' && (
+          <form
+            className={`answer-input text ${invalid ? 'shake' : ''}`}
+            onSubmit={(e) => {
+              e.preventDefault();
+              submit();
+            }}
+          >
+            {ex.before && <span className="affix text-affix">{ex.before}</span>}
+            <input
+              ref={inputRef}
+              autoComplete="off"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
+              lang="en"
+              enterKeyHint="done"
+              value={raw}
+              disabled={done}
+              onChange={(e) => setRaw(e.target.value)}
+              placeholder="…"
+              aria-label="Antwort"
+            />
+            {ex.after && <span className="affix text-affix">{ex.after}</span>}
+          </form>
+        )}
+
+        {ex.type === 'order' && (
+          <div className="order">
+            <div className={`order-line ${done ? status : ''}`} aria-label="Dein Satz">
+              {built.length === 0 && <span className="order-placeholder">Tippe die Wörter in der richtigen Reihenfolge an</span>}
+              {built.map((ti, pos) => (
+                <button key={ti} type="button" className="tile placed" disabled={done} onClick={() => setBuilt(built.filter((_, p) => p !== pos))}>
+                  {ex.tiles[ti]}
+                </button>
+              ))}
+            </div>
+            <div className="order-pool">
+              {ex.tiles.map((t, ti) => (
+                <button key={ti} type="button" className={`tile ${built.includes(ti) ? 'used' : ''}`} disabled={done || built.includes(ti)} onClick={() => setBuilt([...built, ti])}>
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {invalid && <p className="invalid-msg">{ex.type === 'number' ? 'Bitte gib eine Zahl ein (z. B. 12.5).' : 'Bitte gib zuerst eine Antwort ein.'}</p>}
 
         {ex.type === 'choice' && (
           <div className="choices">
@@ -176,6 +245,11 @@ export function ExerciseView({ exercise: ex, onAnswered, onNext, label }: Props)
                 </button>
               )}
             </div>
+            {done && ex.speak && canSpeak() && (
+              <button type="button" className="link-btn speak-line" onClick={() => speak(ex.speak!)}>
+                🔊 Anhören
+              </button>
+            )}
             {showSolution && (
               <ol className="solution">
                 {ex.solution.map((s, i) => (
