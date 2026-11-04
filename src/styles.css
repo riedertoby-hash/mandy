@@ -26,6 +26,8 @@
   --bad-fg: #b8282d;
   --glow: #fff4cc;
   --shelf: #c08a4a;
+  --temp: #e03131;
+  --rain: #4dabf7;
   color-scheme: light;
 }
 
@@ -1865,4 +1867,54 @@ details summary {
 }
 .tile:disabled {
   cursor: default;
+}
+
+/* ---------- Climate diagram ---------- */
+.climate {
+  width: 100%;
+  max-width: 380px;
+  font-family: inherit;
+}
+.climate .c-title {
+  font-weight: 900;
+  font-size: 13px;
+  fill: var(--text);
+}
+.climate .c-axis {
+  font-size: 10px;
+  fill: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.climate .c-axis.temp {
+  fill: var(--temp);
+  font-weight: 800;
+}
+.climate .c-axis.prec {
+  fill: var(--rain);
+  font-weight: 800;
+}
+.climate .c-grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.climate .c-grid.minor {
+  stroke-dasharray: 2 4;
+}
+.climate .c-zero {
+  stroke: var(--muted);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+.climate .c-bar {
+  fill: var(--rain);
+  opacity: 0.75;
+}
+.climate .c-line {
+  fill: none;
+  stroke: var(--temp);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.climate .c-dot {
+  fill: var(--temp);
 }

@@ -10,7 +10,9 @@ export type Visual =
   /** Value table, first column is the row label. */
   | { kind: 'table'; rows: string[][] }
   /** Right triangle: legs a (vertical) and b (horizontal), hypotenuse c. Labels are shown as given. */
-  | { kind: 'triangle'; a: string; b: string; c: string; highlight?: 'a' | 'b' | 'c' };
+  | { kind: 'triangle'; a: string; b: string; c: string; highlight?: 'a' | 'b' | 'c' }
+  /** Climate diagram: 12 monthly mean temperatures (°C, line) and precipitation (mm, bars). */
+  | { kind: 'climate'; place: string; temp: number[]; precip: number[] };
 
 interface ExerciseBase {
   /** Unique id of this concrete task instance. */

@@ -1,6 +1,7 @@
 import type { Subject } from '../core/types';
 import { deutschSubject } from './deutsch';
 import { englishSubject } from './english';
+import { geografieSubject } from './geografie';
 import { mathSubject } from './math';
 
 // To add a subject: create src/content/<fach>/index.ts with topics → chapters → blocks
@@ -12,7 +13,7 @@ export const SUBJECTS: Subject[] = [
   deutschSubject,
   englishSubject,
   comingSoon('franzoesisch', 'Französisch', '🥐', '#ae3ec9'),
-  comingSoon('geografie', 'Geografie', '🗺️', '#2f9e44'),
+  geografieSubject,
   comingSoon('geschichte', 'Geschichte', '🏛️', '#a8743a'),
   comingSoon('biologie', 'Biologie', '🌿', '#37b24d'),
   comingSoon('chemie', 'Chemie', '⚗️', '#0ca678'),

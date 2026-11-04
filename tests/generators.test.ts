@@ -33,7 +33,9 @@ describe('generators', () => {
           expect(checkAnswer(ex, correctAnswer(ex)).correct, `${id} d${d}: ${ex.prompt}`).toBe(true);
           if (ex.type === 'number') {
             expect(Number.isFinite(ex.answer)).toBe(true);
-            expect(checkAnswer(ex, { kind: 'number', raw: String(ex.answer + 1) }).correct).toBe(false);
+            // A value just outside the allowed tolerance must be rejected.
+            const outside = ex.answer + (ex.tolerance ?? 0.001) + 1;
+            expect(checkAnswer(ex, { kind: 'number', raw: String(outside) }).correct).toBe(false);
           }
           if (ex.type === 'choice') {
             expect(new Set(ex.options).size, `${id}: duplicate options in "${ex.prompt}" ${ex.options}`).toBe(ex.options.length);
