@@ -3,6 +3,7 @@ import type { BlockDef, Difficulty, Exercise, Generator, Rng } from '../core/typ
 import { deutschGenerators } from './deutsch/generators';
 import { englishGenerators } from './english/generators';
 import { geografieGenerators } from './geografie/generators';
+import { geschichteGenerators } from './geschichte/generators';
 import { equationGenerators } from './math/equationGenerators';
 import { percentGenerators } from './math/percentGenerators';
 import { proportionalGenerators } from './math/proportionalGenerators';
@@ -16,6 +17,7 @@ export const GENERATORS: Record<string, Generator> = {
   ...englishGenerators,
   ...deutschGenerators,
   ...geografieGenerators,
+  ...geschichteGenerators,
 };
 
 export function generate(gen: string, difficulty: Difficulty, chapterId: string, rng: Rng = createRng()): Exercise {
