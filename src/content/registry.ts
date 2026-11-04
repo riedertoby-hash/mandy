@@ -2,6 +2,7 @@ import { createRng } from '../core/random';
 import type { BlockDef, Difficulty, Exercise, Generator, Rng } from '../core/types';
 import { deutschGenerators } from './deutsch/generators';
 import { englishGenerators } from './english/generators';
+import { geografieGenerators } from './geografie/generators';
 import { equationGenerators } from './math/equationGenerators';
 import { percentGenerators } from './math/percentGenerators';
 import { proportionalGenerators } from './math/proportionalGenerators';
@@ -14,6 +15,7 @@ export const GENERATORS: Record<string, Generator> = {
   ...pythagorasGenerators,
   ...englishGenerators,
   ...deutschGenerators,
+  ...geografieGenerators,
 };
 
 export function generate(gen: string, difficulty: Difficulty, chapterId: string, rng: Rng = createRng()): Exercise {

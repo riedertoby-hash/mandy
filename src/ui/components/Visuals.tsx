@@ -119,6 +119,78 @@ export function RightTriangle({ a, b, c, highlight }: { a: string; b: string; c:
   );
 }
 
+const MONTHS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+
+/** Climate diagram: precipitation bars (right axis, mm) and temperature line (left axis, °C). */
+export function ClimateChart({ place, temp, precip }: { place: string; temp: number[]; precip: number[] }) {
+  const W = 320;
+  const H = 210;
+  const left = 34;
+  const right = 40;
+  const top = 26;
+  const bottom = 30;
+  const plotW = W - left - right;
+  const plotH = H - top - bottom;
+  const tMin = Math.min(-10, Math.floor(Math.min(...temp) / 10) * 10);
+  const tMax = Math.max(30, Math.ceil(Math.max(...temp) / 10) * 10);
+  const pMax = Math.max(100, Math.ceil(Math.max(...precip) / 100) * 100);
+  const ty = (t: number) => top + plotH - ((t - tMin) / (tMax - tMin)) * plotH;
+  const py = (p: number) => top + plotH - (p / pMax) * plotH;
+  const step = plotW / 12;
+  const x = (i: number) => left + step * i + step / 2;
+  const tTicks: number[] = [];
+  for (let t = tMin; t <= tMax; t += 5) tTicks.push(t);
+  const pTicks = [0, pMax / 2, pMax];
+  return (
+    <svg className="climate" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Klimadiagramm ${place}`}>
+      <text x={W / 2} y={14} textAnchor="middle" className="c-title">
+        {place}
+      </text>
+      {tTicks.map((t) => (
+        <g key={t}>
+          <line x1={left} x2={W - right} y1={ty(t)} y2={ty(t)} className={t === 0 ? 'c-zero' : t % 10 === 0 ? 'c-grid' : 'c-grid minor'} />
+          {t % 10 === 0 && (
+            <text x={left - 6} y={ty(t) + 4} textAnchor="end" className="c-axis temp">
+              {t}°
+            </text>
+          )}
+        </g>
+      ))}
+      {pTicks.map((p) => (
+        <text key={p} x={W - right + 6} y={py(p) + 4} className="c-axis prec">
+          {p}
+        </text>
+      ))}
+      <text x={left - 6} y={top - 8} textAnchor="end" className="c-axis temp">
+        °C
+      </text>
+      <text x={W - right + 6} y={top - 8} className="c-axis prec">
+        mm
+      </text>
+      {precip.map((p, i) => (
+        <rect key={i} x={x(i) - step * 0.32} y={py(p)} width={step * 0.64} height={Math.max(0, top + plotH - py(p))} rx={2} className="c-bar">
+          <title>
+            {MONTHS[i]}: {p} mm
+          </title>
+        </rect>
+      ))}
+      <polyline points={temp.map((t, i) => `${x(i)},${ty(t)}`).join(' ')} className="c-line" />
+      {temp.map((t, i) => (
+        <circle key={i} cx={x(i)} cy={ty(t)} r={3} className="c-dot">
+          <title>
+            {MONTHS[i]}: {t} °C
+          </title>
+        </circle>
+      ))}
+      {MONTHS.map((m, i) => (
+        <text key={i} x={x(i)} y={H - bottom + 16} textAnchor="middle" className="c-axis">
+          {m}
+        </text>
+      ))}
+    </svg>
+  );
+}
+
 export function VisualView({ visual }: { visual: Visual }) {
   switch (visual.kind) {
     case 'grid':
@@ -129,5 +201,7 @@ export function VisualView({ visual }: { visual: Visual }) {
       return <ValueTable rows={visual.rows} />;
     case 'triangle':
       return <RightTriangle a={visual.a} b={visual.b} c={visual.c} highlight={visual.highlight} />;
+    case 'climate':
+      return <ClimateChart place={visual.place} temp={visual.temp} precip={visual.precip} />;
   }
 }
