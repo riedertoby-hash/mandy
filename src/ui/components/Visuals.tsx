@@ -191,6 +191,20 @@ export function ClimateChart({ place, temp, precip }: { place: string; temp: num
   );
 }
 
+export function Timeline({ events }: { events: { year: string; label: string }[] }) {
+  return (
+    <ol className="timeline" aria-label="Zeitstrahl">
+      {events.map((e, i) => (
+        <li key={i} className={e.label === '?' ? 'ask' : ''}>
+          <span className="tl-year">{e.year}</span>
+          <span className="tl-dot" aria-hidden />
+          <span className="tl-label">{e.label}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 export function VisualView({ visual }: { visual: Visual }) {
   switch (visual.kind) {
     case 'grid':
@@ -203,5 +217,7 @@ export function VisualView({ visual }: { visual: Visual }) {
       return <RightTriangle a={visual.a} b={visual.b} c={visual.c} highlight={visual.highlight} />;
     case 'climate':
       return <ClimateChart place={visual.place} temp={visual.temp} precip={visual.precip} />;
+    case 'timeline':
+      return <Timeline events={visual.events} />;
   }
 }

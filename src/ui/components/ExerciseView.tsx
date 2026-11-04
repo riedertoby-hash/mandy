@@ -9,7 +9,7 @@ export function formatAnswer(ex: Exercise): string {
   if (ex.type === 'choice') return ex.options[ex.answerIndex];
   if (ex.type === 'grid') return `${ex.answer} Kästchen`;
   if (ex.type === 'text') return [ex.before, ex.answers[0], ex.after].filter(Boolean).join(' ');
-  if (ex.type === 'order') return ex.answers[0];
+  if (ex.type === 'order') return ex.sequence ? ex.sequence.join(' → ') : ex.answers[0];
   if (ex.prefix === 'CHF') return chf(ex.answer);
   const value = num(ex.answer, 4);
   return `${ex.prefix ? ex.prefix + ' ' : ''}${value}${ex.unit ? ' ' + ex.unit : ''}`;
@@ -156,7 +156,7 @@ export function ExerciseView({ exercise: ex, onAnswered, onNext, label }: Props)
         {ex.type === 'order' && (
           <div className="order">
             <div className={`order-line ${done ? status : ''}`} aria-label="Dein Satz">
-              {built.length === 0 && <span className="order-placeholder">Tippe die Wörter in der richtigen Reihenfolge an</span>}
+              {built.length === 0 && <span className="order-placeholder">Tippe die Kärtchen in der richtigen Reihenfolge an</span>}
               {built.map((ti, pos) => (
                 <button key={ti} type="button" className="tile placed" disabled={done} onClick={() => setBuilt(built.filter((_, p) => p !== pos))}>
                   {ex.tiles[ti]}

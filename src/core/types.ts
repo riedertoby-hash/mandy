@@ -12,7 +12,9 @@ export type Visual =
   /** Right triangle: legs a (vertical) and b (horizontal), hypotenuse c. Labels are shown as given. */
   | { kind: 'triangle'; a: string; b: string; c: string; highlight?: 'a' | 'b' | 'c' }
   /** Climate diagram: 12 monthly mean temperatures (°C, line) and precipitation (mm, bars). */
-  | { kind: 'climate'; place: string; temp: number[]; precip: number[] };
+  | { kind: 'climate'; place: string; temp: number[]; precip: number[] }
+  /** Vertical timeline; a label of "?" marks the asked event. */
+  | { kind: 'timeline'; events: { year: string; label: string }[] };
 
 interface ExerciseBase {
   /** Unique id of this concrete task instance. */
@@ -74,6 +76,8 @@ export interface OrderExercise extends ExerciseBase {
   tiles: string[];
   /** Correct sentence(s) as tile sequences joined by single spaces. */
   answers: string[];
+  /** For sequences of items (not sentences): the correct order as tiles, shown with arrows. */
+  sequence?: string[];
 }
 
 export type Exercise = NumberExercise | ChoiceExercise | GridExercise | TextExercise | OrderExercise;

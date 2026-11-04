@@ -1918,3 +1918,65 @@ details summary {
 .climate .c-dot {
   fill: var(--temp);
 }
+
+/* ---------- Timeline ---------- */
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 76px;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--track);
+}
+.timeline li {
+  display: grid;
+  grid-template-columns: 62px 28px 1fr;
+  align-items: center;
+  gap: 0;
+  padding: 6px 0;
+  position: relative;
+}
+.tl-year {
+  font-weight: 900;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--primary);
+  padding-right: 4px;
+}
+.tl-dot {
+  justify-self: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 3px solid var(--surface);
+  box-shadow: 0 0 0 2px var(--primary);
+  z-index: 1;
+}
+.tl-label {
+  font-weight: 700;
+  min-width: 0;
+}
+.timeline li.ask .tl-dot {
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.timeline li.ask .tl-label {
+  display: inline-block;
+  justify-self: start;
+  background: var(--warn-bg);
+  color: var(--warn-fg);
+  padding: 2px 12px;
+  border-radius: 8px;
+  font-weight: 900;
+}
