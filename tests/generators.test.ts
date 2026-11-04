@@ -45,8 +45,10 @@ describe('generators', () => {
             expect(checkAnswer(ex, { kind: 'text', raw: 'zzz' }).correct).toBe(false);
           }
           if (ex.type === 'order') {
-            const sorted = [...ex.tiles].sort().join(' ');
-            for (const a of ex.answers) expect([...a.split(' ')].sort().join(' '), `${id}: tiles ≠ answer`).toBe(sorted);
+            // Tiles may hold several words (German Satzglieder) – compare the word multisets.
+            const words = (t: string) => t.toLowerCase().split(' ').sort().join(' ');
+            const sorted = words(ex.tiles.join(' '));
+            for (const a of ex.answers) expect(words(a), `${id}: tiles ≠ answer`).toBe(sorted);
             expect(ex.tiles.length).toBeGreaterThan(2);
           }
           if (ex.type === 'grid') {
