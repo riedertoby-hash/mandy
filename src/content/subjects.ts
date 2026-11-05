@@ -1,4 +1,5 @@
 import type { Subject } from '../core/types';
+import { biologieSubject } from './biologie';
 import { deutschSubject } from './deutsch';
 import { englishSubject } from './english';
 import { geografieSubject } from './geografie';
@@ -16,7 +17,7 @@ export const SUBJECTS: Subject[] = [
   comingSoon('franzoesisch', 'Französisch', '🥐', '#ae3ec9'),
   geografieSubject,
   geschichteSubject,
-  comingSoon('biologie', 'Biologie', '🌿', '#37b24d'),
+  biologieSubject,
   comingSoon('chemie', 'Chemie', '⚗️', '#0ca678'),
   comingSoon('physik', 'Physik', '⚡', '#f59f00'),
 ];
