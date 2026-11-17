@@ -1,5 +1,6 @@
 import { createRng } from '../core/random';
 import type { BlockDef, Difficulty, Exercise, Generator, Rng } from '../core/types';
+import { biologieGenerators } from './biologie/generators';
 import { deutschGenerators } from './deutsch/generators';
 import { englishGenerators } from './english/generators';
 import { geografieGenerators } from './geografie/generators';
@@ -18,6 +19,7 @@ export const GENERATORS: Record<string, Generator> = {
   ...deutschGenerators,
   ...geografieGenerators,
   ...geschichteGenerators,
+  ...biologieGenerators,
 };
 
 export function generate(gen: string, difficulty: Difficulty, chapterId: string, rng: Rng = createRng()): Exercise {
